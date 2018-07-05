@@ -1,4 +1,4 @@
-上传已有的iOS项目到GitHub
+上传已有的iOS项目到GitHub，并在Xcode中提交代码
 
 ### 1 在GitHub创建项目
 
@@ -25,13 +25,15 @@ git clone https://github.com/wandou911/WKWebViewDemo.git
 ### 4 copy iOS项目到clone到本机的WKWebViewDemo目录
 
 copy 原有iOS项目 WKWebViewDemo文件夹下的所有内容到从 github clone下来的WKWebViewDemo目录
+![copy项目](./images/copy.png)
 
 注意：copy iOS项目WKWebViewDemo文件夹下的所有内容，而不是copyWKWebViewDemo文件夹
 
 ### 5 用Xcode打开WKWebViewDemo 
-
+![打开iOS项目](./images/open)
 
 ### 6 现在就可以直接用Xcode提交代码的GitHub了
 
+![提交代码](./images/commit.png)
 
 
