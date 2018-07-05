@@ -4,5 +4,5 @@
 
 比如现有的iOS项目名称为WKWebViewDemo，就在GitHub创建一个同名的项目
 
-![创建项目](./image/create)
+![创建项目](./image/create.png)
 
