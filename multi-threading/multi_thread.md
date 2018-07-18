@@ -80,7 +80,94 @@ atomic：线程安全，需要消耗大量的资源
 nonatomic：非线程安全，不过效率更高，一般使用nonatomic
 ```
 
+## 五、NSThread的使用
 
+### No.1：NSThread创建线程
+
+NSThread有三种创建方式：
+
+* init方式
+* detachNewThreadSelector创建好之后自动启动
+* performSelectorInBackground创建好之后也是直接启动
+
+```
+/** 方法一，需要start */
+NSThread *thread1 = [[NSThread alloc] initWithTarget:self selector:@selector(doSomething1:) object:@"NSThread1"];
+// 线程加入线程池等待CPU调度，时间很快，几乎是立刻执行
+[thread1 start];
+ 
+/** 方法二，创建好之后自动启动 */
+[NSThread detachNewThreadSelector:@selector(doSomething2:) toTarget:self withObject:@"NSThread2"];
+ 
+/** 方法三，隐式创建，直接启动 */
+[self performSelectorInBackground:@selector(doSomething3:) withObject:@"NSThread3"];
+ 
+- (void)doSomething1:(NSObject *)object {
+    // 传递过来的参数
+    NSLog(@"%@",object);
+    NSLog(@"doSomething1：%@",[NSThread currentThread]);
+}
+ 
+- (void)doSomething2:(NSObject *)object {
+    NSLog(@"%@",object);
+    NSLog(@"doSomething2：%@",[NSThread currentThread]);
+}
+ 
+- (void)doSomething3:(NSObject *)object {
+    NSLog(@"%@",object);
+    NSLog(@"doSomething3：%@",[NSThread currentThread]);
+}
+```
+
+### No.2：NSThread的类方法
+
+* 返回当前线程
+
+```
+// 当前线程
+[NSThread currentThread];
+NSLog(@"%@",[NSThread currentThread]);
+ 
+// 如果number=1，则表示在主线程，否则是子线程
+打印结果：{number = 1, name = main}
+```
+
+* 阻塞休眠
+
+```
+//休眠多久
+[NSThread sleepForTimeInterval:2];
+//休眠到指定时间
+[NSThread sleepUntilDate:[NSDate date]];
+```
+
+* 类方法补充
+
+```
+//退出线程
+[NSThread exit];
+//判断当前线程是否为主线程
+[NSThread isMainThread];
+//判断当前线程是否是多线程
+[NSThread isMultiThreaded];
+//主线程的对象
+NSThread *mainThread = [NSThread mainThread];
+```
+
+### No.3：NSThread的一些属性
+
+```
+//线程是否在执行
+thread.isExecuting;
+//线程是否被取消
+thread.isCancelled;
+//线程是否完成
+thread.isFinished;
+//是否是主线程
+thread.isMainThread;
+//线程的优先级，取值范围0.0到1.0，默认优先级0.5，1.0表示最高优先级，优先级高，CPU调度的频率高
+ thread.threadPriority;
+```
 
 
 
