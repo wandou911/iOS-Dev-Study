@@ -170,6 +170,91 @@ thread.isMainThread;
 ```
 
 
+## 六、GCD的理解与使用
+
+### No.1：GCD的特点
+
+* GCD会自动利用更多的CPU内核
+* GCD自动管理线程的生命周期（创建线程，调度任务，销毁线程等）
+* 程序员只需要告诉 GCD 想要如何执行什么任务，不需要编写任何线程管理代码
+
+### No.2：GCD的基本概念
+
+* 任务（block）：任务就是将要在线程中执行的代码，将这段代码用block封装好，然后将这个任务添加到指定的执行方式（同步执行和异步执行），等待CPU从队列中取出任务放到对应的线程中执行。
+* 同步（sync）：一个接着一个，前一个没有执行完，后面不能执行，不开线程。
+* 异步（async）：开启多个新线程，任务同一时间可以一起执行。异步是多线程的代名词
+* 队列：装载线程任务的队形结构。(系统以先进先出的方式调度队列中的任务执行)。在GCD中有两种队列：串行队列和并发队列。
+* 并发队列：线程可以同时一起进行执行。实际上是CPU在多条线程之间快速的切换。（并发功能只有在异步（dispatch_async）函数下才有效）
+* 串行队列：线程只能依次有序的执行。
+* GCD总结：将任务(要在线程中执行的操作block)添加到队列(自己创建或使用全局并发队列)，并且指定执行任务的方式(异步dispatch_async，同步dispatch_sync)
+
+### No.3：队列的创建方法
+
+* 使用dispatch_queue_create来创建队列对象，传入两个参数，第一个参数表示队列的唯一标识符，可为空。第二个参数用来表示串行队列（DISPATCH_QUEUE_SERIAL）或并发队列（DISPATCH_QUEUE_CONCURRENT）。
+
+```
+/ 串行队列
+dispatch_queue_t queue = dispatch_queue_create("test", DISPATCH_QUEUE_SERIAL);
+// 并发队列
+dispatch_queue_t queue1 = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT);
+```
+
+* GCD的队列还有另外两种
+
+主队列：主队列负责在主线程上调度任务，如果在主线程上已经有任务正在执行，主队列会等到主线程空闲后再调度任务。通常是返回主线程更新UI的时候使用。dispatch_get_main_queue()
+
+```
+dispatch_async(dispatch_get_global_queue(0, 0), ^{
+      // 耗时操作放在这里
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+          // 回到主线程进行UI操作
+
+      });
+  });
+```
+全局并发队列：全局并发队列是就是一个并发队列，是为了让我们更方便的使用多线程。
+dispatch_get_global_queue(0, 0)
+
+```
+//全局并发队列
+dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+//全局并发队列的优先级
+#define DISPATCH_QUEUE_PRIORITY_HIGH 2 // 高优先级
+#define DISPATCH_QUEUE_PRIORITY_DEFAULT 0 // 默认（中）优先级
+#define DISPATCH_QUEUE_PRIORITY_LOW (-2) // 低优先级
+#define DISPATCH_QUEUE_PRIORITY_BACKGROUND INT16_MIN // 后台优先级
+//iOS8开始使用服务质量，现在获取全局并发队列时，可以直接传0
+dispatch_get_global_queue(0, 0);
+```
+
+### No.4：同步/异步/任务、创建方式
+
+同步（sync）使用dispatch_sync来表示。
+
+异步（async）使用dispatch_async。
+
+任务就是将要在线程中执行的代码，将这段代码用block封装好。
+
+代码如下：
+
+```
+// 同步执行任务
+    dispatch_sync(dispatch_get_global_queue(0, 0), ^{
+        // 任务放在这个block里
+        NSLog(@"我是同步执行的任务");
+ 
+    });
+    // 异步执行任务
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        // 任务放在这个block里
+        NSLog(@"我是异步执行的任务");
+ 
+    });
+```
+
+
+
 
 
 
