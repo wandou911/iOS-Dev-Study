@@ -1,4 +1,5 @@
 iOS多线程
+参考链接[iOS多线程](http://www.cocoachina.com/ios/20170707/19769.html)
 
 ## 目的
 
@@ -530,16 +531,181 @@ No.5：GCD的使用
 主队列异步3   {number = 1, name = main}
 ```
 
+* GCD线程之间的通讯
 
+开发中需要在主线程上进行UI的相关操作，通常会把一些耗时的操作放在其他线程，比如说图片文件下载等耗时操作。
 
+当完成了耗时操作之后，需要回到主线程进行UI的处理，这里就用到了线程之间的通讯。
 
+```
+- (IBAction)communicationBetweenThread:(id)sender {
+ 
+    // 异步
+    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+        // 耗时操作放在这里，例如下载图片。（运用线程休眠两秒来模拟耗时操作）
+        [NSThread sleepForTimeInterval:2];
+        NSString *picURLStr = @"http://www.bangmangxuan.net/uploads/allimg/160320/74-160320130500.jpg";
+        NSURL *picURL = [NSURL URLWithString:picURLStr];
+        NSData *picData = [NSData dataWithContentsOfURL:picURL];
+        UIImage *image = [UIImage imageWithData:picData];
+ 
+        // 回到主线程处理UI
+        dispatch_async(dispatch_get_main_queue(), ^{
+            // 在主线程上添加图片
+            self.imageView.image = image;
+        });
+    });
+}
+```
 
+上面的代码是在新开的线程中进行图片的下载，下载完成之后回到主线程显示图片。
 
+* GCD栅栏
 
+当任务需要异步进行，但是这些任务需要分成两组来执行，第一组完成之后才能进行第二组的操作。这时候就用了到GCD的栅栏方法dispatch_barrier_async。
 
+```
+- (IBAction)barrierGCD:(id)sender {
+ 
+    // 并发队列
+    dispatch_queue_t queue = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT);
+ 
+    // 异步执行
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"栅栏：并发异步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"栅栏：并发异步2   %@",[NSThread currentThread]);
+        }
+    });
+ 
+    dispatch_barrier_async(queue, ^{
+        NSLog(@"------------barrier------------%@", [NSThread currentThread]);
+        NSLog(@"******* 并发异步执行，但是34一定在12后面 *********");
+    });
+ 
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"栅栏：并发异步3   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"栅栏：并发异步4   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
 
+上面代码的打印结果如下，开启了多条线程，所有任务都是并发异步进行。但是第一组完成之后，才会进行第二组的操作。
 
+```
+栅栏：并发异步1   {number = 3, name = (null)}
+栅栏：并发异步2   {number = 6, name = (null)}
+栅栏：并发异步1   {number = 3, name = (null)}
+栅栏：并发异步2   {number = 6, name = (null)}
+栅栏：并发异步1   {number = 3, name = (null)}
+栅栏：并发异步2   {number = 6, name = (null)}
+ ------------barrier------------{number = 6, name = (null)}
+******* 并发异步执行，但是34一定在12后面 *********
+栅栏：并发异步4   {number = 3, name = (null)}
+栅栏：并发异步3   {number = 6, name = (null)}
+栅栏：并发异步4   {number = 3, name = (null)}
+栅栏：并发异步3   {number = 6, name = (null)}
+栅栏：并发异步4   {number = 3, name = (null)}
+栅栏：并发异步3   {number = 6, name = (null)}
+```
 
+* GCD延时执行
+
+当需要等待一会再执行一段代码时，就可以用到这个方法了：dispatch_after。
+
+```
+dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+    // 5秒后异步执行
+    NSLog(@"我已经等待了5秒！");
+});
+GCD实现代码只执行一次
+使用dispatch_once能保证某段代码在程序运行过程中只被执行1次。可以用来设计单例。
+static dispatch_once_t onceToken;
+dispatch_once(&onceToken, ^{
+    NSLog(@"程序运行过程中我只执行了一次！");
+});
+```
+
+* GCD快速迭代
+
+GCD有一个快速迭代的方法dispatch_apply，dispatch_apply可以同时遍历多个数字。
+
+```
+- (IBAction)applyGCD:(id)sender {
+ 
+    NSLog(@"\n\n************** GCD快速迭代 ***************\n\n");
+ 
+    // 并发队列
+    dispatch_queue_t queue = dispatch_get_global_queue(0, 0);
+ 
+    // dispatch_apply几乎同时遍历多个数字
+    dispatch_apply(7, queue, ^(size_t index) {
+        NSLog(@"dispatch_apply：%zd======%@",index, [NSThread currentThread]);
+    });
+}
+```
+
+打印结果如下：
+
+```
+dispatch_apply：0======{number = 1, name = main}
+dispatch_apply：1======{number = 1, name = main}
+dispatch_apply：2======{number = 1, name = main}
+dispatch_apply：3======{number = 1, name = main}
+dispatch_apply：4======{number = 1, name = main}
+dispatch_apply：5======{number = 1, name = main}
+dispatch_apply：6======{number = 1, name = main}
+```
+
+* GCD队列组
+
+异步执行几个耗时操作，当这几个操作都完成之后再回到主线程进行操作，就可以用到队列组了。
+
+队列组有下面几个特点：
+
+1 所有的任务会并发的执行(不按序)。
+2 所有的异步函数都添加到队列中，然后再纳入队列组的监听范围。
+3 使用dispatch_group_notify函数，来监听上面的任务是否完成，如果完成, 就会调用这个方法。
+
+队列组示例代码：
+
+```
+- (void)testGroup {
+    dispatch_group_t group =  dispatch_group_create();
+ 
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        NSLog(@"队列组：有一个耗时操作完成！");
+    });
+ 
+    dispatch_group_async(group, dispatch_get_global_queue(0, 0), ^{
+        NSLog(@"队列组：有一个耗时操作完成！");
+    });
+ 
+    dispatch_group_notify(group, dispatch_get_main_queue(), ^{
+        NSLog(@"队列组：前面的耗时操作都完成了，回到主线程进行相关操作");
+    });
+}
+```
+
+打印结果如下：
+
+```
+队列组：有一个耗时操作完成！
+队列组：有一个耗时操作完成！
+队列组：前面的耗时操作都完成了，回到主线程进行相关操作
+```
+
+至此，GCD的相关内容叙述完毕。下面让我们继续学习NSOperation。
 
 
 
