@@ -253,6 +253,288 @@ dispatch_get_global_queue(0, 0);
     });
 ```
 
+No.5：GCD的使用
+
+由于有多种队列（串行/并发/主队列）和两种执行方式（同步/异步），所以他们之间可以有多种组合方式。
+
+1 串行同步
+2 串行异步
+3 并发同步
+4 并发异步
+5 主队列同步
+6 主队列异步
+
+* 串行同步
+
+执行完一个任务，再执行下一个任务。不开启新线程。
+
+```
+/** 串行同步 */
+- (void)syncSerial {
+ 
+    NSLog(@"\n\n**************串行同步***************\n\n");
+ 
+    // 串行队列
+    dispatch_queue_t queue = dispatch_queue_create("test", DISPATCH_QUEUE_SERIAL);
+ 
+    // 同步执行
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"串行同步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"串行同步2   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"串行同步3   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
+
+输入结果为顺序执行，都在主线程：
+
+```
+串行同步1   {number = 1, name = main}
+串行同步1   {number = 1, name = main}
+串行同步1   {number = 1, name = main}
+串行同步2   {number = 1, name = main}
+串行同步2   {number = 1, name = main}
+串行同步2   {number = 1, name = main}
+串行同步3   {number = 1, name = main}
+串行同步3   {number = 1, name = main}
+串行同步3   {number = 1, name = main}
+```
+
+* 串行异步
+
+开启新线程，但因为任务是串行的，所以还是按顺序执行任务。
+
+```
+/** 串行异步 */
+- (void)asyncSerial {
+ 
+    NSLog(@"\n\n**************串行异步***************\n\n");
+ 
+    // 串行队列
+    dispatch_queue_t queue = dispatch_queue_create("test", DISPATCH_QUEUE_SERIAL);
+ 
+    // 同步执行
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"串行异步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"串行异步2   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"串行异步3   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
+
+输入结果为顺序执行，有不同线程：
+
+```
+串行异步1   {number = 3, name = (null)}
+串行异步1   {number = 3, name = (null)}
+串行异步1   {number = 3, name = (null)}
+串行异步2   {number = 3, name = (null)}
+串行异步2   {number = 3, name = (null)}
+串行异步2   {number = 3, name = (null)}
+串行异步3   {number = 3, name = (null)}
+串行异步3   {number = 3, name = (null)}
+串行异步3   {number = 3, name = (null)}
+```
+
+* 并发同步
+
+因为是同步的，所以执行完一个任务，再执行下一个任务。不会开启新线程。
+
+```
+/** 并发同步 */
+- (void)syncConcurrent {
+3
+    NSLog(@"\n\n**************并发同步***************\n\n");
+3
+    // 并发队列
+    dispatch_queue_t queue = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT);
+3
+    // 同步执行
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"并发同步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"并发同步2   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"并发同步3   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
+
+输入结果为顺序执行，都在主线程：
+
+```
+并发同步1   {number = 1, name = main}
+并发同步1   {number = 1, name = main}
+并发同步1   {number = 1, name = main}
+并发同步2   {number = 1, name = main}
+并发同步2   {number = 1, name = main}
+并发同步2   {number = 1, name = main}
+并发同步3   {number = 1, name = main}
+并发同步3   {number = 1, name = main}
+并发同步3   {number = 1, name = main}
+```
+
+* 并发异步
+
+任务交替执行，开启多线程。
+
+```
+/** 并发异步 */
+- (void)asyncConcurrent {
+ 
+    NSLog(@"\n\n**************并发异步***************\n\n");
+ 
+    // 并发队列
+    dispatch_queue_t queue = dispatch_queue_create("test", DISPATCH_QUEUE_CONCURRENT);
+ 
+    // 同步执行
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"并发异步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"并发异步2   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_async(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"并发异步3   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
+
+输入结果为无序执行，有多条线程：
+
+```
+并发异步1   {number = 3, name = (null)}
+并发异步2   {number = 4, name = (null)}
+并发异步3   {number = 5, name = (null)}
+并发异步1   {number = 3, name = (null)}
+并发异步2   {number = 4, name = (null)}
+并发异步3   {number = 5, name = (null)}
+并发异步1   {number = 3, name = (null)}
+并发异步2   {number = 4, name = (null)}
+并发异步3   {number = 5, name = (null)}
+```
+
+* 主队列同步
+
+如果在主线程中运用这种方式，则会发生死锁，程序崩溃。
+
+```
+/** 主队列同步 */
+- (void)syncMain {
+ 
+    NSLog(@"\n\n**************主队列同步，放到主线程会死锁***************\n\n");
+ 
+    // 主队列
+    dispatch_queue_t queue = dispatch_get_main_queue();
+ 
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"主队列同步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"主队列同步2   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"主队列同步3   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
+
+主队列同步造成死锁的原因：
+
+1 如果在主线程中运用主队列同步，也就是把任务放到了主线程的队列中。
+2 而同步对于任务是立刻执行的，那么当把第一个任务放进主队列时，它就会立马执行。
+3 可是主线程现在正在处理syncMain方法，任务需要等syncMain执行完才能执行。
+4 syncMain执行到第一个任务的时候，又要等第一个任务执行完才能往下执行第二个和第三个任务。
+5 这样syncMain方法和第一个任务就开始了互相等待，形成了死锁。
+
+* 主队列异步
+
+```
+/** 主队列异步 */
+- (void)asyncMain {
+ 
+    NSLog(@"\n\n**************主队列异步***************\n\n");
+ 
+    // 主队列
+    dispatch_queue_t queue = dispatch_get_main_queue();
+ 
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"主队列异步1   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"主队列异步2   %@",[NSThread currentThread]);
+        }
+    });
+    dispatch_sync(queue, ^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"主队列异步3   %@",[NSThread currentThread]);
+        }
+    });
+}
+```
+
+输入结果为在主线程中按顺序执行：
+
+```
+主队列异步1   {number = 1, name = main}
+主队列异步1   {number = 1, name = main}
+主队列异步1   {number = 1, name = main}
+主队列异步2   {number = 1, name = main}
+主队列异步2   {number = 1, name = main}
+主队列异步2   {number = 1, name = main}
+主队列异步3   {number = 1, name = main}
+主队列异步3   {number = 1, name = main}
+主队列异步3   {number = 1, name = main}
+```
+
+
+
+
+
+
 
 
 
