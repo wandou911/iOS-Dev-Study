@@ -707,5 +707,109 @@ dispatch_apply：6======{number = 1, name = main}
 
 至此，GCD的相关内容叙述完毕。下面让我们继续学习NSOperation。
 
+## 七、NSOperation的理解与使用
+
+### No.1：NSOperation简介
+
+NSOperation是基于GCD之上的更高一层封装，NSOperation需要配合NSOperationQueue来实现多线程。
+
+NSOperation实现多线程的步骤如下：
+
+```
+1. 创建任务：先将需要执行的操作封装到NSOperation对象中。
+2. 创建队列：创建NSOperationQueue。
+3. 将任务加入到队列中：将NSOperation对象添加到NSOperationQueue中。
+```
+
+需要注意的是，NSOperation是个抽象类，实际运用时中需要使用它的子类，有三种方式：
+
+1 使用子类NSInvocationOperation
+2 使用子类NSBlockOperation
+3 定义继承自NSOperation的子类，通过实现内部相应的方法来封装任务。
+
+### No.2：NSOperation的三种创建方式
+
+* NSInvocationOperation的使用
+
+创建NSInvocationOperation对象并关联方法，之后start。
+
+```
+- (void)testNSInvocationOperation {
+    // 创建NSInvocationOperation
+    NSInvocationOperation *invocationOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(invocationOperation) object:nil];
+    // 开始执行操作
+    [invocationOperation start];
+}
+ 
+- (void)invocationOperation {
+    NSLog(@"NSInvocationOperation包含的任务，没有加入队列========%@", [NSThread currentThread]);
+}
+```
+
+打印结果如下，得到结论：程序在主线程执行，没有开启新线程。
+
+这是因为NSOperation多线程的使用需要配合队列NSOperationQueue，后面会讲到NSOperationQueue的使用。
+
+```
+NSInvocationOperation包含的任务，没有加入队列========{number = 1, name = main}
+
+```
+
+* NSBlockOperation的使用
+
+把任务放到NSBlockOperation的block中，然后start。
+
+```
+- (void)testNSBlockOperation {
+    // 把任务放到block中
+    NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"NSBlockOperation包含的任务，没有加入队列========%@", [NSThread currentThread]);
+    }];
+ 
+    [blockOperation start];
+}
+```
+
+执行结果如下，可以看出：主线程执行，没有开启新线程。
+
+同样的，NSBlockOperation可以配合队列NSOperationQueue来实现多线程。
+
+```
+NSBlockOperation包含的任务，没有加入队列========{number = 1, name = main}
+
+```
+
+但是NSBlockOperation有一个方法addExecutionBlock:，通过这个方法可以让NSBlockOperation实现多线程。
+
+```
+- (void)testNSBlockOperationExecution {
+    NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"NSBlockOperation运用addExecutionBlock主任务========%@", [NSThread currentThread]);
+    }];
+ 
+    [blockOperation addExecutionBlock:^{
+        NSLog(@"NSBlockOperation运用addExecutionBlock方法添加任务1========%@", [NSThread currentThread]);
+    }];
+    [blockOperation addExecutionBlock:^{
+        NSLog(@"NSBlockOperation运用addExecutionBlock方法添加任务2========%@", [NSThread currentThread]);
+    }];
+    [blockOperation addExecutionBlock:^{
+        NSLog(@"NSBlockOperation运用addExecutionBlock方法添加任务3========%@", [NSThread currentThread]);
+    }];
+    [blockOperation start];
+}
+```
+
+执行结果如下，可以看出，NSBlockOperation创建时block中的任务是在主线程执行，而运用addExecutionBlock加入的任务是在子线程执行的。
+
+```
+NSBlockOperation运用addExecutionBlock========{number = 1, name = main}
+addExecutionBlock方法添加任务1========{number = 3, name = (null)}
+addExecutionBlock方法添加任务3========{number = 5, name = (null)}
+addExecutionBlock方法添加任务2========{number = 4, name = (null)}
+```
+
+
+
 
 
