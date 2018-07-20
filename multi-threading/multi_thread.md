@@ -809,6 +809,264 @@ addExecutionBlock方法添加任务3========{number = 5, name = (null)}
 addExecutionBlock方法添加任务2========{number = 4, name = (null)}
 ```
 
+* 运用继承自NSOperation的子类
+
+首先我们定义一个继承自NSOperation的类，然后重写它的main方法，之后就可以使用这个子类来进行相关的操作了。
+
+```
+/*******************"WHOperation.h"*************************/
+ 
+#import @interface WHOperation : NSOperation
+ 
+@end
+ 
+ 
+/*******************"WHOperation.m"*************************/
+ 
+#import "WHOperation.h"
+ 
+@implementation WHOperation
+ 
+- (void)main {
+    for (int i = 0; i < 3; i++) {
+        NSLog(@"NSOperation的子类WHOperation======%@",[NSThread currentThread]);
+    }
+}
+ 
+@end
+ 
+ 
+/*****************回到主控制器使用WHOperation**********************/
+ 
+- (void)testWHOperation {
+    WHOperation *operation = [[WHOperation alloc] init];
+    [operation start];
+}
+```
+
+运行结果如下，依然是在主线程执行。
+
+```
+SOperation的子类WHOperation======{number = 1, name = main}
+NSOperation的子类WHOperation======{number = 1, name = main}
+NSOperation的子类WHOperation======{number = 1, name = main}
+```
+
+所以，NSOperation是需要配合队列NSOperationQueue来实现多线程的。下面就来说一下队列NSOperationQueue。
+
+### No.3：队列NSOperationQueue
+
+NSOperationQueue只有两种队列：主队列、其他队列。其他队列包含了串行和并发。
+
+主队列的创建如下，主队列上的任务是在主线程执行的。
+
+```
+NSOperationQueue *mainQueue = [NSOperationQueue mainQueue];
+```
+
+其他队列（非主队列）的创建如下，加入到‘非队列’中的任务默认就是并发，开启多线程。
+
+```
+NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+```
+
+注意：
+
+非主队列（其他队列）可以实现串行或并行。
+队列NSOperationQueue有一个参数叫做最大并发数：maxConcurrentOperationCount。
+maxConcurrentOperationCount默认为-1，直接并发执行，所以加入到‘非队列’中的任务默认就是并发，开启多线程。
+当maxConcurrentOperationCount为1时，则表示不开线程，也就是串行。
+当maxConcurrentOperationCount大于1时，进行并发执行。
+系统对最大并发数有一个限制，所以即使程序员把maxConcurrentOperationCount设置的很大，系统也会自动调整。所以把最大并发数设置的很大是没有意义的。
+
+### No.4：NSOperation + NSOperationQueue
+
+把任务加入队列，这才是NSOperation的常规使用方式。
+
+* addOperation添加任务到队列
+先创建好任务，然后运用- (void)addOperation:(NSOperation *)op 方法来吧任务添加到队列中，示例代码如下：
+
+```
+(void)testOperationQueue {
+    // 创建队列，默认并发
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+ 
+    // 创建操作，NSInvocationOperation
+    NSInvocationOperation *invocationOperation = [[NSInvocationOperation alloc] initWithTarget:self selector:@selector(invocationOperationAddOperation) object:nil];
+    // 创建操作，NSBlockOperation
+    NSBlockOperation *blockOperation = [NSBlockOperation blockOperationWithBlock:^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"addOperation把任务添加到队列======%@", [NSThread currentThread]);
+        }
+    }];
+ 
+    [queue addOperation:invocationOperation];
+    [queue addOperation:blockOperation];
+}
+ 
+ 
+- (void)invocationOperationAddOperation {
+    NSLog(@"invocationOperation===aaddOperation把任务添加到队列====%@", [NSThread currentThread]);
+```
+
+运行结果如下，可以看出，任务都是在子线程执行的，开启了新线程！
+
+```
+invocationOperation===addOperation把任务添加到队列===={number = 4, name = (null)}
+addOperation把任务添加到队列======{number = 3, name = (null)}
+addOperation把任务添加到队列======{number = 3, name = (null)}
+addOperation把任务添加到队列======{number = 3, name = (null)}
+```
+
+* addOperationWithBlock添加任务到队列
+
+这是一个更方便的把任务添加到队列的方法，直接把任务写在block中，添加到任务中。
+
+```
+- (void)testAddOperationWithBlock {
+    // 创建队列，默认并发
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+ 
+    // 添加操作到队列
+    [queue addOperationWithBlock:^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"addOperationWithBlock把任务添加到队列======%@", [NSThread currentThread]);
+        }
+    }];
+}
+```
+
+运行结果如下，任务确实是在子线程中执行。
+
+```
+addOperationWithBlock把任务添加到队列======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列======{number = 3, name = (null)}
+```
+
+* 运用最大并发数实现串行
+
+上面已经说过，可以运用队列的属性maxConcurrentOperationCount（最大并发数）来实现串行，值需要把它设置为1就可以了，下面我们通过代码验证一下。
+
+```
+- (void)testMaxConcurrentOperationCount {
+    // 创建队列，默认并发
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+ 
+    // 最大并发数为1，串行
+    queue.maxConcurrentOperationCount = 1;
+ 
+    // 最大并发数为2，并发
+//    queue.maxConcurrentOperationCount = 2;
+ 
+ 
+    // 添加操作到队列
+    [queue addOperationWithBlock:^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"addOperationWithBlock把任务添加到队列1======%@", [NSThread currentThread]);
+        }
+    }];
+    // 添加操作到队列
+    [queue addOperationWithBlock:^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"addOperationWithBlock把任务添加到队列2======%@", [NSThread currentThread]);
+        }
+    }];
+ 
+    // 添加操作到队列
+    [queue addOperationWithBlock:^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"addOperationWithBlock把任务添加到队列3======%@", [NSThread currentThread]);
+        }
+    }];
+}
+```
+
+运行结果如下，当最大并发数为1的时候，虽然开启了线程，但是任务是顺序执行的，所以实现了串行。
+
+你可以尝试把上面的最大并发数变为2，会发现任务就变成了并发执行。
+
+```
+addOperationWithBlock把任务添加到队列1======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列1======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列1======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列2======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列2======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列2======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列3======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列3======{number = 3, name = (null)}
+addOperationWithBlock把任务添加到队列3======{number = 3, name = (null)}
+```
+
+### No.5：NSOperation的其他操作
+
+* 取消队列NSOperationQueue的所有操作，NSOperationQueue对象方法
+```
+- (void)cancelAllOperations
+```
+* 取消NSOperation的某个操作，NSOperation对象方法
+```
+- (void)cancel
+```
+* 使队列暂停或继续
+
+```
+// 暂停队列
+[queue setSuspended:YES];
+```
+* 判断队列是否暂停
+```
+- (BOOL)isSuspended
+```
+
+暂停和取消不是立刻取消当前操作，而是等当前的操作执行完之后不再进行新的操作。
+
+### No.6：NSOperation的操作依赖
+
+NSOperation有一个非常好用的方法，就是操作依赖。可以从字面意思理解：某一个操作（operation2）依赖于另一个操作（operation1），只有当operation1执行完毕，才能执行operation2，这时，就是操作依赖大显身手的时候了
+
+```
+- (void)testAddDependency {
+ 
+    // 并发队列
+    NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+ 
+    // 操作1
+    NSBlockOperation *operation1 = [NSBlockOperation blockOperationWithBlock:^{
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"operation1======%@", [NSThread  currentThread]);
+        }
+    }];
+ 
+    // 操作2
+    NSBlockOperation *operation2 = [NSBlockOperation blockOperationWithBlock:^{
+        NSLog(@"****operation2依赖于operation1，只有当operation1执行完毕，operation2才会执行****");
+        for (int i = 0; i < 3; i++) {
+            NSLog(@"operation2======%@", [NSThread  currentThread]);
+        }
+    }];
+ 
+    // 使操作2依赖于操作1
+    [operation2 addDependency:operation1];
+    // 把操作加入队列
+    [queue addOperation:operation1];
+    [queue addOperation:operation2];
+}
+```
+
+运行结果如下，操作2总是在操作1之后执行，成功验证了上面的说法。
+
+```
+operation1======{number = 3, name = (null)}
+operation1======{number = 3, name = (null)}
+operation1======{number = 3, name = (null)}
+****operation2依赖于operation1，只有当operation1执行完毕，operation2才会执行****
+operation2======{number = 4, name = (null)}
+operation2======{number = 4, name = (null)}
+operation2======{number = 4, name = (null)}
+```
+
+
 
 
 
