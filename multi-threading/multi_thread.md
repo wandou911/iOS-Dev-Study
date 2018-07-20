@@ -13,6 +13,10 @@ iOS多线程
 6 GCD的理解与使用
 7 NSOperation的理解与使用
 
+Demo在这里：[WHMultiThreadDemo](https://github.com/remember17/WHMultiThreadDemo)
+
+Demo 效果图
+![demo](http://cc.cocimg.com/api/uploads/20170707/1499394574376547.gif)
 
 ## 一、多线程的基本概念
 
@@ -1066,7 +1070,11 @@ operation2======{number = 4, name = (null)}
 operation2======{number = 4, name = (null)}
 ```
 
+后记
 
+* 本文所述的示例代码在这里：[WHMultiThreadDemo](https://github.com/remember17/WHMultiThreadDemo)
+* 推荐简单又好用的分类集合：[WHKit](http://www.jianshu.com/p/c935314b078e)
+* github地址：https://github.com/remember17
 
 
 
