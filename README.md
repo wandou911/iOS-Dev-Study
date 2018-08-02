@@ -16,4 +16,4 @@
 
 #### 多线程
 
-##### [iOS多线程基础](./multi-threading/multi-threading.md)
+##### [1 iOS多线程基础](./multi-threading/multi_thread.md)
