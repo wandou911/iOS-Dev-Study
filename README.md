@@ -20,25 +20,23 @@
 
 ### 常用第三方库
 
- [一个支持多选、选原图和视频的图片选择器--TZImagePickerController](https://github.com/banchichen/TZImagePickerController)
  
- [Masonry自动计算行高--HYBMasonryAutoCellHeight](https://github.com/CoderJackyHuang/HYBMasonryAutoCellHeight)
 
 #### 网络模块
-AFNetworking-------------------网络基础库           ====》https://github.com/AFNetworking/AFNetworking
-YTKNetwork---------------------网络基础库二次封装    ====》https://github.com/yuantiku/YTKNetwork
+[AFNetworking-------------------网络基础库](https://github.com/AFNetworking/AFNetworking)
+[YTKNetwork---------------------网络基础库二次封装](https://github.com/yuantiku/YTKNetwork)
 
 ##### UI模块
-Masonry------------------------布局自适应工具        ====》https://github.com/SnapKit/Masonry
-MJRefresh----------------------下拉、上拉刷新        ====》https://github.com/CoderMJLee/MJRefresh
-SVProgressHUD------------------加载提示效果          ====》https://github.com/samvermette/SVProgressHUD
-YYText------------------富文本处理
-SDCycleScrollView------------------banner轮播
+[Masonry------------------------布局自适应工具](https://github.com/SnapKit/Masonry)
+[MJRefresh----------------------下拉、上拉刷新](https://github.com/CoderMJLee/MJRefresh)
+[SVProgressHUD------------------加载提示效果](https://github.com/samvermette/SVProgressHUD)
+[YYText------------------富文本处理]
+[SDCycleScrollView------------------banner轮播]
 
 #### 图片处理
 SDWebImage---------------------图片缓存和加载
 YYWebImage---------------------gif图片处理
-
+[一个支持多选、选原图和视频的图片选择器--TZImagePickerController](https://github.com/banchichen/TZImagePickerController)
 #### 分享模块
 友盟分享------------------------友盟分享
 UMengUShare/Social/WeChat------------------------微信(完整版14.4M)
@@ -57,3 +55,4 @@ BlocksKit-------------------------代理封装成Block
 JSONModel-------------------------数据模型转换
 TPKeyboardAvoiding-------------------------键盘处理
 UITableView+FDTemplateLayoutCell-------------------------tableview高度缓存
+[HYBMasonryAutoCellHeight-------------------------Masonry自动计算行高](https://github.com/CoderJackyHuang/HYBMasonryAutoCellHeight)
