@@ -23,3 +23,37 @@
  [一个支持多选、选原图和视频的图片选择器--TZImagePickerController](https://github.com/banchichen/TZImagePickerController)
  
  [Masonry自动计算行高--HYBMasonryAutoCellHeight](https://github.com/CoderJackyHuang/HYBMasonryAutoCellHeight)
+
+#### 网络模块
+AFNetworking-------------------网络基础库           ====》https://github.com/AFNetworking/AFNetworking
+YTKNetwork---------------------网络基础库二次封装    ====》https://github.com/yuantiku/YTKNetwork
+
+##### UI模块
+Masonry------------------------布局自适应工具        ====》https://github.com/SnapKit/Masonry
+MJRefresh----------------------下拉、上拉刷新        ====》https://github.com/CoderMJLee/MJRefresh
+SVProgressHUD------------------加载提示效果          ====》https://github.com/samvermette/SVProgressHUD
+YYText------------------富文本处理
+SDCycleScrollView------------------banner轮播
+
+#### 图片处理
+SDWebImage---------------------图片缓存和加载
+YYWebImage---------------------gif图片处理
+
+#### 分享模块
+友盟分享------------------------友盟分享
+UMengUShare/Social/WeChat------------------------微信(完整版14.4M)
+UMengUShare/Social/QQ------------------------QQ/QZone/TIM(完整版7.6M)
+UMengUShare/Social/Sina------------------------新浪微博(完整版25.3M)
+
+#### 推送
+JPush-------------------------极光推送
+
+#### 云存储
+AliyunOSSiOS-------------------------阿里云存储
+
+##### 工具
+MJExtension-------------------------扩展类
+BlocksKit-------------------------代理封装成Block
+JSONModel-------------------------数据模型转换
+TPKeyboardAvoiding-------------------------键盘处理
+UITableView+FDTemplateLayoutCell-------------------------tableview高度缓存
