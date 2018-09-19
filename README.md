@@ -17,3 +17,9 @@
 #### 多线程
 
 ##### [1 iOS多线程基础](./multi-threading/multi_thread.md)
+
+### 常用第三方库
+
+ [一个支持多选、选原图和视频的图片选择器](https://github.com/banchichen/TZImagePickerController)
+ 
+ [Masonry自动计算行高](https://github.com/CoderJackyHuang/HYBMasonryAutoCellHeight)
