@@ -2,6 +2,12 @@
 
 ## iOS开发学习系列文章
 
+### 语言基础
+
+Q：[Dot (“.”) operator and arrow (“->”) operator use in C vs. Objective-C](https://stackoverflow.com/questions/9072688/dot-operator-and-arrow-operator-use-in-c-vs-objective-c)
+
+A：[补充说明]（https://www.cnblogs.com/guozqzzu/p/3592011.html）
+
 ### 开发技巧
 
 #### [1 使用Xcode提交代码到GitHub](./upload-ios-project/upload-ios-project.md)
