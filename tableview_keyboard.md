@@ -6,8 +6,6 @@
 
 　　但是，如果我们的整体布局并不是只有一个UITableView，或者我们在项目中需要用到MBProgressHUD框架时，我们可能就不能直接将我们的控制器设置成UITableViewController或其子类，因为MBProgressHUD框架在UITableViewController和UICollectionViewController中显示会存在一些bug，在GitHub中的MBProgressHUD框架官方文档中就有提到要避免将HUD添加到具有复杂视图层次结构的某些UIKit视图（如UITableView或UICollectionView），UITableViewController和UICollectionViewController中的self.view实际上就是对应的UITableView或UICollectionView，所以会出现一些莫名其妙的bug，显示不出来或者显示的位置不对。
 
-
-
 ### 二 主控制器为UIViewController或其子类
 　　其实最开始我就是用的UITableViewController，结果要提示的要提示的tips总是显示不设定的位置上，后来才得以发现的这个bug，我也很无奈，我们的项目汇总因为用到了MBProgressHUD框架，所以只能是用UIViewController上布局一个UITableView来实现，这样我们再self.view上布局MBProgressHUD时才避开了UITableView或UICollectionView，然后就都没问题了。言归正传，下面就说回到我们要解决的问题，在UITableView的cell中，系统自带的UITableViewCell的格式没有自带UITextField或UITextView这种可以编辑的区域的，而这种类型的cell在我们的项目开发包中经常要用到，所以我们就需要对这类cell进行封装和自定义。
 
@@ -15,19 +13,23 @@
 
 　　在对cell进行封装和自定义的时候，我们需要考虑我们的UITextField或UITextView从点击编辑框到结束编辑的整个过程是怎么样的，在这个过程中我们需要回传什么信息，才能保证我们的可以对我们控制器中的tableview进行控制。下面的流程就是UITextField或UITextView在整个编辑过程中的详细流程步骤：
 
-在成为第一响应者之前，文本框调用其代理的textFieldShouldBeginEditing:  方法来允许或阻止其第一响应者，并控制是否对文本框进行输入
-成为第一响应者，对应的相应事件就是系统调用键盘（自动弹出），并且系统会根据需要发出`UIKeyboardWillShowNotification` 和`UIKeyboardDidShowNotification的Notification`通知，而如果此时系统中有其他的输入视图是可视的，则系统会发出 `UIKeyboardWillChangeFrameNotification`和`UIKeyboardDidChangeFrameNotification`的通知
-系统调用代理的 textFieldDidBeginEditing:  方法，并且发出`UITextFieldTextDidBeginEditingNotification`的通知，此时光标已经在text field中定位了，键盘也已经弹出来了，接下来可以进行输入了
-在输入信息过程中，当前文本内容改变就会调用，textField:shouldChangeCharactersInRange:replacementString: 方法，并且会发出`UITextFieldTextDidChangeNotification`的通知。此外，当用户点击【clear/清除】按键时调用 textFieldShouldClear: 方法清除内容，当用户点击【return/完成】按键时调用 textFieldShouldReturn: 方法，注意：UITextViewDelegate没有对应清除和完成方法，所以我们不能调用textFieldShouldClear: 方法和 textFieldShouldReturn： 方法实现【clear/清除】和【return/完成】按键的效果 
-在文本框输入即将结束，即即将注销第一响应者时，系统会调用 textFieldShouldEndEditing: 方法
-文本框注销第一响应者，对应的响应时间就是系统收回键盘，并且在隐藏键盘时会发出 `UIKeyboardWillHideNotification`和`UIKeyboardDidHideNotification`的通知
-最后，系统调用 textFieldDidEndEditing:  方法结束输入，并发出`UITextFieldTextDidEndEditingNotification`的通知。
+* 在成为第一响应者之前，文本框调用其代理的textFieldShouldBeginEditing:  方法来允许或阻止其第一响应者，并控制是否对文本框进行输入
+
+* 成为第一响应者，对应的相应事件就是系统调用键盘（自动弹出），并且系统会根据需要发出`UIKeyboardWillShowNotification` 和`UIKeyboardDidShowNotification的Notification`通知，而如果此时系统中有其他的输入视图是可视的，则系统会发出 `UIKeyboardWillChangeFrameNotification`和`UIKeyboardDidChangeFrameNotification`的通知
+
+* 系统调用代理的 textFieldDidBeginEditing:  方法，并且发出`UITextFieldTextDidBeginEditingNotification`的通知，此时光标已经在text field中定位了，键盘也已经弹出来了，接下来可以进行输入了
+
+* 在输入信息过程中，当前文本内容改变就会调用，textField:shouldChangeCharactersInRange:replacementString: 方法，并且会发出`UITextFieldTextDidChangeNotification`的通知。此外，当用户点击【clear/清除】按键时调用 textFieldShouldClear: 方法清除内容，当用户点击【return/完成】按键时调用 textFieldShouldReturn: 方法，注意：UITextViewDelegate没有对应清除和完成方法，所以我们不能调用textFieldShouldClear: 方法和 textFieldShouldReturn： 方法实现【clear/清除】和【return/完成】按键的效果
+
+* 在文本框输入即将结束，即即将注销第一响应者时，系统会调用 textFieldShouldEndEditing: 方法
+
+* 文本框注销第一响应者，对应的响应时间就是系统收回键盘，并且在隐藏键盘时会发出 `UIKeyboardWillHideNotification`和`UIKeyboardDidHideNotification`的通知
+
+* 最后，系统调用 textFieldDidEndEditing:  方法结束输入，并发出`UITextFieldTextDidEndEditingNotification`的通知。
 
 #### 2.2 自定义包含UITextField的UITableViewCell
 
 　　首先，我们在点击编辑区域的时候，获取到当前编辑区域相对屏幕的位置，这样方便我们判断整个tableview是否需要上移以及需要上移多少比较合适。当然，我们自定义的cell中的UITextField或UITextView的代理设为cell自己，具体实现如下：
-　　
-　　
 　　
 ```
 #import <UIKit/UIKit.h>
