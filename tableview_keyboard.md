@@ -52,10 +52,7 @@ typedef void(^ContentStartEditBlock)(CGRect frameToView);
 ```
 
 在这里，我们定义了两个回调block，分别在编辑区域开始编辑(textFieldDidBeginEditing: )和结束编辑(textFieldDidEndEditing: )的时候调用，开始编辑的时候返回当前cell相对屏幕的位置方便我们控制是否上移tableview，结束编辑时返回我们编辑框的内容方便进行记录。具体实现的代码如下：
-
- 　　
- 　```
-
+```
   1 #import "BasicCell.h"
   2 @interface BasicCell () <UITextFieldDelegate>
   3 @property (strong, nonatomic) UILabel *titleLabel;          //标题栏
@@ -269,3 +266,6 @@ typedef void(^ContentStartEditBlock)(CGRect frameToView);
     }];
 }
 ```
+
+参考链接：[iOS学习——tableview中带编辑功能的cell键盘弹出遮挡和收起问题解决](https://cloud.tencent.com/developer/article/1084561)
+
