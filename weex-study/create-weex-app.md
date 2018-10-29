@@ -70,13 +70,15 @@ weex debug
 
 如果你想了解 Weex 背后的原理：
 
-* Weex 是如何工作的
-* 设计理念
-* 和 Web 平台的差异
+* [Weex 是如何工作的](http://weex.apache.org/cn/wiki/index.html)
+* [设计理念](http://weex.apache.org/cn/wiki/design-principles.html)
+* [和 Web 平台的差异](http://weex.apache.org/cn/wiki/platform-difference.html)
 
 如果你想让 Weex 变得更好：
 
-* Weex 的开发流程
-* 如何参与贡献
+* [Weex 的开发流程](http://weex.apache.org/cn/development-process.html)
+* [如何参与贡献](http://weex.apache.org/cn/contributing.html)
 
 此外，Weex 是一个跨栈的技术，开发人员也是多样化的，学习一些前端开发、Vue.js、iOS 和 Android 的基本知识，会对你开发 Weex 有很大的帮助。
+
+参考链接:[Weex快速上手](http://weex.apache.org/cn/guide/)
