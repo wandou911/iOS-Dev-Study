@@ -1,4 +1,4 @@
-## [App Store 审核指南](https://developer.apple.com/cn/app-store/review/guidelines/)
+## App Store 审核指南
 
 
 ### 提交之前 – 审核前核对清单
