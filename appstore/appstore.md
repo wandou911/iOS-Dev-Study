@@ -310,8 +310,12 @@ Bug、IPv6 未搭载、测试账号、隐藏开关等
 
 从上图我们不难看出近期苹果的审核重点—TOP3 仍然是 2.3 元数据、2.1 App 完成度、4.3 垃圾应用。除此之外，近三个月内条款 5.1 法律问题、5.2 知识产权问题已然成为了苹果审核侧重点
 
-参考链接:
+#### 参考链接:
+
 1 [App Store 审核指南](https://developer.apple.com/cn/app-store/review/guidelines/)
+
 2 [App Store 审核被拒的23个理由](https://www.kancloud.cn/hongweizhiyuan/apple_developer/712226)
+
 3 [App Store 9月被拒原因汇总](https://segmentfault.com/a/1190000011545079)
+
 4 [Solve-App-Store-Review-Problem](https://github.com/wg689/Solve-App-Store-Review-Problem)
