@@ -58,10 +58,16 @@ Miracast是实时的，它可以实时传输源端(Source)的输出。源端任�
 
 接收端(receiver)：PC MAC
 
+## 其他方案
 
+录屏：
 
+[xindawan:KSYAirPlayDemo](https://github.com/ksvc/KSYDiversityLive_iOS/tree/master/KSYAirPlayDemo)
+[ksyun自研: ](https://github.com/ksvc/KSYAirStreamer_iOS)
 
+录屏：[ReplayKit](https://github.com/KrystalNa/LNRecordingScreen)
 ### 参考链接：
 
 1 [iOS DLNA投屏功能](https://www.jianshu.com/p/1a522c2a4bbd)
 
+2 [iOS 手游直播方案比较及Airplay录屏详解](https://www.jianshu.com/p/a100901ff544)
