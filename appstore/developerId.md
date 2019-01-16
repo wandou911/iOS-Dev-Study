@@ -98,9 +98,23 @@
 准备好相关信息 回复邮件！
 
 
+### 准备好相关信息 回复邮件
+
+1天左右即可收到邓白氏公司的回复，如果材料合格，就可以收到邮件，告诉邓白氏码申请成功；如果材料不合格，会要求补充需要的材料，继续审核。
 
 
+## 继续申请苹果开发者账号
+![选择公司](https://ws1.sinaimg.cn/large/006tNc79ly1fz8jw1e1pdj31a00u0n0b.jpg)
+
+![填写公司相关信息](https://ws1.sinaimg.cn/large/006tNc79ly1fz8jwfrbhmj310h0u044v.jpg)
+
+![填写公司相关信息](https://ws4.sinaimg.cn/large/006tNc79ly1fz8jwij3anj31cg0n8goj.jpg)
+
+填写完成后点击继续按钮
+
+![注册处理中](https://ws1.sinaimg.cn/large/006tNc79ly1fz8jwp2p43j31mc0gi76v.jpg)
 
 
+这时候处于等待审核，同时也会收到苹果的邮件，等待审核。
 
 
